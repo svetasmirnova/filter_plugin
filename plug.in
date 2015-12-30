@@ -1,0 +1,5 @@
+MYSQL_PLUGIN(filter_plugin, [FILTER SQL:2003 support for MySQL]),
+                              [FILTER support for MySQL]
+MYSQL_PLUGIN_DYNAMIC(filter_plugin, [filter_plugin.la])
+MYSQL_PLUGIN_STATIC(filter_plugin, [filter_plugin.a])
+
