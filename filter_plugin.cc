@@ -5,7 +5,7 @@
 *
 * filter_plugin is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
+* the Free Software Foundation, either version 2 of the License, or
 * (at your option) any later version.
 *
 * filter_plugin is distributed in the hope that it will be useful,
@@ -97,6 +97,9 @@ void _rewrite_query(const void *event, const struct mysql_event_parse *event_par
 * <set quantifier> ::=
 * DISTINCT
 * | ALL
+*
+* MySQL only supports COUNT|AVG|SUM|MAX|MIN|STDDEV_POP|STDDEV_SAMP|VAR_SAMP|VAR_POP
+*
 */
 static int filter(MYSQL_THD thd, mysql_event_class_t event_class,
                           const void *event)
@@ -114,15 +117,15 @@ static int filter(MYSQL_THD thd, mysql_event_class_t event_class,
   rewritten_query= regex_replace(subject, filter_clause_star, "$1(CASE WHEN $3 THEN 1 ELSE NULL END)");
   subject= rewritten_query;
   
-  regex filter_clause_distinct("(COUNT|AVG|SUM)\\(\\s*DISTINCT\\s([^\\)]*)\\)\\s+FILTER\\s*\\(\\s*WHERE\\s+([^\\)]+)\\s*\\)", ECMAScript | icase);
+  regex filter_clause_distinct("(COUNT|AVG|SUM|MAX|MIN|STDDEV_POP|STDDEV_SAMP|VAR_SAMP|VAR_POP)\\(\\s*DISTINCT\\s([^\\)]*)\\)\\s+FILTER\\s*\\(\\s*WHERE\\s+([^\\)]+)\\s*\\)", ECMAScript | icase);
   rewritten_query= regex_replace(subject, filter_clause_distinct, "$1(DISTINCT CASE WHEN $3 THEN $2 ELSE NULL END)");   
   subject= rewritten_query;
   
-  regex filter_clause_all("(COUNT|AVG|SUM)\\(\\s*ALL\\s([^\\)]*)\\)\\s+FILTER\\s*\\(\\s*WHERE\\s+([^\\)]+)\\s*\\)", ECMAScript | icase);
+  regex filter_clause_all("(COUNT|AVG|SUM|MAX|MIN|STDDEV_POP|STDDEV_SAMP|VAR_SAMP|VAR_POP)\\(\\s*ALL\\s([^\\)]*)\\)\\s+FILTER\\s*\\(\\s*WHERE\\s+([^\\)]+)\\s*\\)", ECMAScript | icase);
   rewritten_query= regex_replace(subject, filter_clause_all, "$1(ALL CASE WHEN $3 THEN $2 ELSE NULL END)");   
   subject= rewritten_query;
   
-  regex filter_clause("(COUNT|AVG|SUM)\\(([^\\)]*)\\)\\s+FILTER\\s*\\(\\s*WHERE\\s+([^\\)]+)\\s*\\)", ECMAScript | icase);
+  regex filter_clause("(COUNT|AVG|SUM|MAX|MIN|STDDEV_POP|STDDEV_SAMP|VAR_SAMP|VAR_POP)\\(([^\\)]*)\\)\\s+FILTER\\s*\\(\\s*WHERE\\s+([^\\)]+)\\s*\\)", ECMAScript | icase);
   rewritten_query= regex_replace(subject, filter_clause, "$1(CASE WHEN $3 THEN $2 ELSE NULL END)");
   
   if (0 != rewritten_query.compare(event_parse->query.str))
