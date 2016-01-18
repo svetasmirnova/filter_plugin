@@ -1,0 +1,78 @@
+install plugin filter_plugin soname 'filter_plugin.so';
+create table user (host char(60) COLLATE utf8_bin NOT NULL DEFAULT '', user char(32) COLLATE utf8_bin NOT NULL DEFAULT '') DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+insert into user (user, host) values('root', '127.0.0.1'), ('root', '::1'), ('mysql.sys', 'localhost'), ('root', 'localhost'), ('root', 'thinkie');
+SELECT 1;
+1
+1
+SELECT COUNT(user) FROM user;
+COUNT(user)
+5
+SELECT COUNT(user) FILTER(WHERE host='127.0.0.1') FROM user;
+COUNT(CASE WHEN host='127.0.0.1' THEN user ELSE NULL END)
+1
+Warnings:
+Note	1105	Query 'SELECT COUNT(user) FILTER(WHERE host='127.0.0.1') FROM user' rewritten to 'SELECT COUNT(CASE WHEN host='127.0.0.1' THEN user ELSE NULL END) FROM user' by a query rewrite plugin
+Warning	1292	Truncated incorrect INTEGER value: 'root                                                                                            '
+SELECT COUNT(*) FILTER(WHERE host='127.0.0.1') FROM user;
+COUNT(CASE WHEN host='127.0.0.1' THEN 1 ELSE NULL END)
+1
+Warnings:
+Note	1105	Query 'SELECT COUNT(*) FILTER(WHERE host='127.0.0.1') FROM user' rewritten to 'SELECT COUNT(CASE WHEN host='127.0.0.1' THEN 1 ELSE NULL END) FROM user' by a query rewrite plugin
+SELECT COUNT(user) FILTER(WHERE host='127.0.0.1'), COUNT(*) FILTER(WHERE host like '%host') FROM user;
+COUNT(CASE WHEN host='127.0.0.1' THEN user ELSE NULL END)	COUNT(CASE WHEN host like '%host' THEN 1 ELSE NULL END)
+1	2
+Warnings:
+Note	1105	Query 'SELECT COUNT(user) FILTER(WHERE host='127.0.0.1'), COUNT(*) FILTER(WHERE host like '%host') FROM user' rewritten to 'SELECT COUNT(CASE WHEN host='127.0.0.1' THEN user ELSE NULL END), COUNT(CASE WHEN host like '%host' THEN 1 ELSE NULL END) FROM user' by a query rewrite plugin
+Warning	1292	Truncated incorrect INTEGER value: 'root                                                                                            '
+SELECT COUNT(DISTINCT user) FILTER(WHERE host not like '%host') FROM user;
+COUNT(DISTINCT CASE WHEN host not like '%host' THEN user ELSE NULL END)
+1
+Warnings:
+Note	1105	Query 'SELECT COUNT(DISTINCT user) FILTER(WHERE host not like '%host') FROM user' rewritten to 'SELECT COUNT(DISTINCT CASE WHEN host not like '%host' THEN user ELSE NULL END) FROM user' by a query rewrite plugin
+SELECT COUNT(ALL user) FILTER(WHERE host not like '%host') FROM user;
+COUNT(ALL CASE WHEN host not like '%host' THEN user ELSE NULL END)
+3
+Warnings:
+Note	1105	Query 'SELECT COUNT(ALL user) FILTER(WHERE host not like '%host') FROM user' rewritten to 'SELECT COUNT(ALL CASE WHEN host not like '%host' THEN user ELSE NULL END) FROM user' by a query rewrite plugin
+Warning	1292	Truncated incorrect INTEGER value: 'root                                                                                            '
+Warning	1292	Truncated incorrect INTEGER value: 'root                                                                                            '
+Warning	1292	Truncated incorrect INTEGER value: 'root                                                                                            '
+select 1;
+1
+1
+select count(user) from user;
+count(user)
+5
+select count(user) filter(where host='127.0.0.1') from user;
+count(CASE WHEN host='127.0.0.1' THEN user ELSE NULL END)
+1
+Warnings:
+Note	1105	Query 'select count(user) filter(where host='127.0.0.1') from user' rewritten to 'select count(CASE WHEN host='127.0.0.1' THEN user ELSE NULL END) from user' by a query rewrite plugin
+Warning	1292	Truncated incorrect INTEGER value: 'root                                                                                            '
+select count(*) filter(where host='127.0.0.1') from user;
+count(CASE WHEN host='127.0.0.1' THEN 1 ELSE NULL END)
+1
+Warnings:
+Note	1105	Query 'select count(*) filter(where host='127.0.0.1') from user' rewritten to 'select count(CASE WHEN host='127.0.0.1' THEN 1 ELSE NULL END) from user' by a query rewrite plugin
+select count(user) filter(where host='127.0.0.1'), count(*) filter(where host like '%host') from user;
+count(CASE WHEN host='127.0.0.1' THEN user ELSE NULL END)	count(CASE WHEN host like '%host' THEN 1 ELSE NULL END)
+1	2
+Warnings:
+Note	1105	Query 'select count(user) filter(where host='127.0.0.1'), count(*) filter(where host like '%host') from user' rewritten to 'select count(CASE WHEN host='127.0.0.1' THEN user ELSE NULL END), count(CASE WHEN host like '%host' THEN 1 ELSE NULL END) from user' by a query rewrite plugin
+Warning	1292	Truncated incorrect INTEGER value: 'root                                                                                            '
+select count(distinct user) filter(where host not like '%host') from user;
+count(DISTINCT CASE WHEN host not like '%host' THEN user ELSE NULL END)
+1
+Warnings:
+Note	1105	Query 'select count(distinct user) filter(where host not like '%host') from user' rewritten to 'select count(DISTINCT CASE WHEN host not like '%host' THEN user ELSE NULL END) from user' by a query rewrite plugin
+select count(all user) filter(where host not like '%host') from user;
+count(ALL CASE WHEN host not like '%host' THEN user ELSE NULL END)
+3
+Warnings:
+Note	1105	Query 'select count(all user) filter(where host not like '%host') from user' rewritten to 'select count(ALL CASE WHEN host not like '%host' THEN user ELSE NULL END) from user' by a query rewrite plugin
+Warning	1292	Truncated incorrect INTEGER value: 'root                                                                                            '
+Warning	1292	Truncated incorrect INTEGER value: 'root                                                                                            '
+Warning	1292	Truncated incorrect INTEGER value: 'root                                                                                            '
+uninstall plugin filter_plugin;
+Warnings:
+Warning	1620	Plugin is busy and will be uninstalled on shutdown

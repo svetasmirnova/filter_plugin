@@ -1,0 +1,21 @@
+install plugin filter_plugin soname 'filter_plugin.so'; 
+
+create table user (host char(60) COLLATE utf8_bin NOT NULL DEFAULT '', user char(32) COLLATE utf8_bin NOT NULL DEFAULT '') DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+insert into user (user, host) values('root', '127.0.0.1'), ('root', '::1'), ('mysql.sys', 'localhost'), ('root', 'localhost'), ('root', 'thinkie');
+
+SELECT 1;
+SELECT COUNT(user) FROM user;
+SELECT COUNT(user) FILTER(WHERE host='127.0.0.1') FROM user;
+SELECT COUNT(*) FILTER(WHERE host='127.0.0.1') FROM user;
+SELECT COUNT(user) FILTER(WHERE host='127.0.0.1'), COUNT(*) FILTER(WHERE host like '%host') FROM user;
+SELECT COUNT(DISTINCT user) FILTER(WHERE host not like '%host') FROM user;
+SELECT COUNT(ALL user) FILTER(WHERE host not like '%host') FROM user;
+select 1;
+select count(user) from user;
+select count(user) filter(where host='127.0.0.1') from user;
+select count(*) filter(where host='127.0.0.1') from user;
+select count(user) filter(where host='127.0.0.1'), count(*) filter(where host like '%host') from user;
+select count(distinct user) filter(where host not like '%host') from user;
+select count(all user) filter(where host not like '%host') from user;
+
+uninstall plugin filter_plugin;
